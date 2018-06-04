@@ -120,7 +120,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                 let json = JSON.parse(body);
                 console.log(JSON.stringify(json))
                 console.log("THE RESPONSE IS " + json.Response==="True");
-                if (json.Response === "True") {
+            // if (json.Response === "True") {
                     console.log("ENTEEREDD JSON.Response");
                     var query = {
                         user_id: sender
@@ -146,11 +146,11 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                     });
                     //   sendTextMessage(sender, msg);
 
-                } else {
-                    console.log("EROORRRR IN json.Response");
-                    console.log(json.Error);
-                    msg = json.Error
-                }
+            //    } else {
+             //       console.log("EROORRRR IN json.Response");
+              //      console.log(json.Error);
+               //     msg = json.Error
+               // }
             } else {
                 msg = 'I failed to look up the city name.'
             }
