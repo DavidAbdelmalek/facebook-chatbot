@@ -259,10 +259,8 @@ function sendTypingOff(recipientId) {
 function handlePostBack(event){
      var senderId = event.sender.id;
      var payload = event.postback.payload;
-
+    console.log(payload);
      if (payload === "Greeting") {
-         // Get user's first name from the User Profile API
-         // and include it in the greeting
          request({
              url: "https://graph.facebook.com/v2.6/" + senderId,
              qs: {
