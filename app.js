@@ -93,7 +93,7 @@ function receivedMessage(event) {
 
 
 function sendToApiAi(sender, text) {
-
+	sendTypingOn(sender);
     //to make a request to api, we set a text and session it
     //https://dialogflow.com/docs/reference/api-v2/rest/v2beta1/WebhookRequest
     let apiaiRequest = apiAiService.textRequest(text, {
@@ -119,7 +119,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
                 console.log(JSON.stringify(json))
-            // if (json.Response === "True") {
                     var query = {
                         user_id: sender
                     };
@@ -136,8 +135,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                         upsert: true
                     };
                     weatherDB.findOneAndUpdate(query, update, options, function (err, mov) {
-                      console.log("Entered weather DB find and Update");
-
                         if (err) {
                             console.log("Database error: " + err);
                         } else {
@@ -146,13 +143,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                         sendTextMessage(sender, msg);
                         return;
                     });
-                    //   
 
-            //    } else {
-             //       console.log("EROORRRR IN json.Response");
-              //      console.log(json.Error);
-               //     msg = json.Error
-               // }
             } else {
                 msg = 'I failed to look up the city name.'
             }
@@ -173,6 +164,8 @@ function handleApiAiResponse(sender, response) {
     let action = response.result.action;
     let contexts = response.result.contexts;
     let parameters = response.result.parameters;
+
+    sendTypingOff(sender);
 
     if (responseText == '' && !isDefined(action)) {
         //api ai could not evaluate input.
@@ -224,6 +217,43 @@ function callSendAPI(messageData) {
         }
     });
 }
+
+/*
+ * Turn typing indicator on
+ *
+ */
+function sendTypingOn(recipientId) {
+
+
+    var messageData = {
+        recipient: {
+            id: recipientId
+        },
+        sender_action: "typing_on"
+    };
+
+    callSendAPI(messageData);
+}
+
+
+
+/*
+ * Turn typing indicator off
+ *
+ */
+function sendTypingOff(recipientId) {
+
+
+    var messageData = {
+        recipient: {
+            id: recipientId
+        },
+        sender_action: "typing_off"
+    };
+
+    callSendAPI(messageData);
+}
+
 
 function isDefined(obj) {
     if (typeof obj == 'undefined') {
