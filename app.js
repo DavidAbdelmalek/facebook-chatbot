@@ -260,7 +260,7 @@ function handlePostBack(event){
      var senderId = event.sender.id;
      var payload = event.postback.payload;
     console.log(payload);
-     if (payload === "Greeting") {
+     if (payload === "FACEBOOK_WELCOME") {
          request({
              url: "https://graph.facebook.com/v2.6/" + senderId,
              qs: {
