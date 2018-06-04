@@ -50,7 +50,6 @@ app.post('/webhook', function (req, res) {
         req.body.entry.forEach(function (entry) {
             entry.messaging.forEach(function (event) {
                 if (event.message && event.message.text) {
-
                     receivedMessage(event);
                 }
             });
@@ -120,8 +119,9 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                 console.log(JSON.stringify(json));
                  msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
                 sendTextMessage(sender, msg);
-            } else 
+            } else{ 
                 msg = 'I failed to look up the city name.'
+            }
              sendTextMessage(sender, msg)
         });
     } else {
@@ -132,7 +132,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 function handleApiAiResponse(sender, response) {
     console.log("RESPONSE IS \n" + JSON.stringify(response.body));
-    console.log("//////// " + response.result.action + " with compariseon to " + response.queryResult.action);
+//    console.log("//////// " + response.result.action + " with compariseon to " + response.queryResult.action);
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
@@ -168,6 +168,7 @@ function sendTextMessage(recipientId, text) {
 
 
 function callSendAPI(messageData) {
+    console.log(messageData.body)
     request({
         uri: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {
