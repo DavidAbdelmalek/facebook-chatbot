@@ -129,7 +129,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                         user_id: sender,
                         city: city,
                         temperature: json.main.temp,
-                        description: jjson.weather[0].description,
+                        description: json.weather[0].description,
                         windSpeed: json.wind.speed,
                         pressure: json.main.pressure,
                         humidity: json.main.humidity
