@@ -117,7 +117,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
                 console.log(JSON.stringify(json));
-                 msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
+                 msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
              //   sendTextMessage(sender, msg);
             } else{ 
                 msg = 'I failed to look up the city name.'
