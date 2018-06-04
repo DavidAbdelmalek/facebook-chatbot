@@ -56,6 +56,16 @@ app.post('/webhook', function (req, res) {
                 if (event.postback){
                     handlePostBack(event)
                 }
+                else if (event.message.attachments){
+                    var lat = null;
+                    var long = null;
+                    if (messageAttachments[0].payload.coordinates) {
+                        lat = messageAttachments[0].payload.coordinates.lat;
+                        long = messageAttachments[0].payload.coordinates.long;
+                    }
+                    var msg = "lat : " + lat + " ,long : " + long + "\n";
+                    sendTextMessage(senderID, msg);
+                }
                 else if (event.message && event.message.text) {
                     receivedMessage(event);
                 }
@@ -75,20 +85,9 @@ function receivedMessage(event) {
     var message = event.message;
 
 
-    // console.log("Received message for user %d and page %d at %d with message:", senderID, recipientID, timeOfMessage);
-    //  console.log(JSON.stringify(message));
-
-    //if sender is not exists in map, set the sender as a key to random number as a value;
     if (!sessionIds.has(senderID)) {
         sessionIds.set(senderID, uuid.v1());
     }
-    //Handling Quick Reply
-    //var quickReply = message.quick_reply;
-    // if (quickReply) {
-    //   handleQuickReply(senderID, quickReply, messageId);
-    //   return;
-    // }
-
     //Handling message Text
     var messageText = message.text;
     sendToApiAi(senderID, messageText);
@@ -161,7 +160,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 
 function handleApiAiResponse(sender, response) {
-    //    console.log("//////// " + response.result.action + " with compariseon to " + response.queryResult.action);
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
@@ -277,12 +275,12 @@ function handlePostBack(event){
                  name = bodyObj.first_name;
                  greeting = "Hi " + name + ". ";
              }
-             var message = greeting + "My name is Weather ChatBot. I can tell you various details regarding weather."
+             var message = greeting + "My name is Weather ChatBot. I can tell you various details regarding weather";
              sendTextMessage(senderId, message);
+             
          });
      }
 }
-
 
 function isDefined(obj) {
     if (typeof obj == 'undefined') {
