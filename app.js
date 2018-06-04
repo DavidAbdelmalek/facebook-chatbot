@@ -111,25 +111,17 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
     console.log("Entered handleApiAiAction "+action);
     if (action === 'weather') {
         console.log("Entered Action")
+        let msg;
         let city = parameters['geo-city'];
         let restUrl = 'http://api.openweathermap.org/data/2.5/weather?APPID=' + config.WEATHER_API_KEY + '&q=' + city;
         request.get(restUrl, (err, response, body) => {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
-                let msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
-                return response.json({
-                    speech: msg,
-                    displayText: msg,
-                    source: 'weather'
-                });
-            } else {
-                return response.status(400).json({
-                    status: {
-                        code: 400,
-                        errorType: 'I failed to look up the city name.'
-                    }
-                });
-            }
+                 msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
+                sendTextMessage(sender, msg);
+            } else 
+                msg = 'I failed to look up the city name.'
+             sendTextMessage(sender, msg)
         });
     } else {
         sendTextMessage(sender, responseText);
