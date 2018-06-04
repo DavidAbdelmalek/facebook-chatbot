@@ -138,7 +138,8 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 
 function handleApiAiResponse(sender, response) {
-    console.log("RESPONSE IS \n"+response);
+    console.log("RESPONSE IS \n" + JSON.stringify(response.body));
+    console.log("//////// " + response.result.action + " with compariseon to " + response.queryResult.action);
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
