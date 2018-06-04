@@ -141,7 +141,7 @@ function handleApiAiResponse(sender, response) {
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
-    let action = response.result.action;
+    let action = response.queryResult.action;
     let contexts = response.result.contexts;
     let parameters = response.result.parameters;
 
