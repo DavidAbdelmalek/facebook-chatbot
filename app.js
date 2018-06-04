@@ -119,9 +119,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
                 console.log(JSON.stringify(json))
-                console.log("THE RESPONSE IS " + json.Response==="True");
             // if (json.Response === "True") {
-                    console.log("ENTEEREDD JSON.Response");
                     var query = {
                         user_id: sender
                     };
@@ -138,6 +136,8 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                         upsert: true
                     };
                     weatherDB.findOneAndUpdate(query, update, options, function (err, mov) {
+                      console.log("Entered weather DB find and Update");
+
                         if (err) {
                             console.log("Database error: " + err);
                         } else {
