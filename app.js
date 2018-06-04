@@ -117,13 +117,13 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
                 let msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
-                return res.json({
+                return response.json({
                     speech: msg,
                     displayText: msg,
                     source: 'weather'
                 });
             } else {
-                return res.status(400).json({
+                return response.status(400).json({
                     status: {
                         code: 400,
                         errorType: 'I failed to look up the city name.'
