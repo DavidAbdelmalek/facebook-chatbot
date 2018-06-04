@@ -119,6 +119,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
                 console.log(JSON.stringify(json))
+                console.log("THE RESPONSE IS " + json.Response);
                 if (json.Response === "True") {
                     var query = {
                         user_id: sender
