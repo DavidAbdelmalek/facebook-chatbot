@@ -9,7 +9,7 @@ const uuid = require('uuid')
 var mongoose = require("mongoose");
 
 var db = mongoose.connect(process.env.MONGODB_URI);
-var Movie = require("./weather");
+var weatherDB = require("./weather");
 
 
 var app = express();
@@ -71,8 +71,8 @@ function receivedMessage(event) {
     var message = event.message;
 
 
-//    console.log("Received message for user %d and page %d at %d with message:", senderID, recipientID, timeOfMessage);
-//   console.log(JSON.stringify(message));
+    // console.log("Received message for user %d and page %d at %d with message:", senderID, recipientID, timeOfMessage);
+    //  console.log(JSON.stringify(message));
 
     //if sender is not exists in map, set the sender as a key to random number as a value;
     if (!sessionIds.has(senderID)) {
@@ -120,23 +120,38 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                 let json = JSON.parse(body);
                 console.log(JSON.stringify(json))
                 if (json.Response === "True") {
-                    var query = {user_id: userId};
-                      var update = {
-                          user_id: sender,
-                          city: json.Title,
-                          temperature: json.Plot,
-                          description: json.Released,
-                          windSpeed: json.Runtime,
-                          pressure: json.Director,
-                          humidity: json.Actors
-                      };
+                    var query = {
+                        user_id: sender
+                    };
+                    var update = {
+                        user_id: sender,
+                        city: city,
+                        temperature: json.main.temp,
+                        description: jjson.weather[0].description,
+                        windSpeed: json.wind.speed,
+                        pressure: json.main.pressure,
+                        humidity: json.main.humidity
+                    };
+                    var options = {
+                        upsert: true
+                    };
+                    weatherDB.findOneAndUpdate(query, update, options, function (err, mov) {
+                        if (err) {
+                            console.log("Database error: " + err);
+                        } else {
+                            msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
+                        }
+                    });
+                    //   sendTextMessage(sender, msg);
+
+                } else {
+                    console.log(json.Error);
+                    msg = json.Error
                 }
-                 msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
-             //   sendTextMessage(sender, msg);
-            } else{ 
+            } else {
                 msg = 'I failed to look up the city name.'
             }
-             sendTextMessage(sender, msg)
+            sendTextMessage(sender, msg)
         });
     } else {
         sendTextMessage(sender, responseText);
@@ -145,6 +160,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 
 function handleApiAiResponse(sender, response) {
+    //    console.log("//////// " + response.result.action + " with compariseon to " + response.queryResult.action);
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
