@@ -6,6 +6,11 @@ const apiai = require('apiai');
 const sessionIds = new Map();
 const uuid = require('uuid')
 
+var mongoose = require("mongoose");
+
+var db = mongoose.connect(process.env.MONGODB_URI);
+var Movie = require("./weather");
+
 
 var app = express();
 app.use(bodyParser.json());
@@ -116,6 +121,19 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
         request.get(restUrl, (err, response, body) => {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
+                console.log(JSON.stringify(json))
+                if (json.Response === "True") {
+                    var query = {user_id: userId};
+                      var update = {
+                          user_id: sender,
+                          city: json.Title,
+                          temperature: json.Plot,
+                          description: json.Released,
+                          windSpeed: json.Runtime,
+                          pressure: json.Director,
+                          humidity: json.Actors
+                      };
+                }
                 console.log(JSON.stringify(json));
                  msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
              //   sendTextMessage(sender, msg);
