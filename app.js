@@ -143,7 +143,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                         } else {
                             msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
                         }
-                        console.log("The message is "+msg);
                     });
                     //   sendTextMessage(sender, msg);
 
@@ -155,6 +154,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
             } else {
                 msg = 'I failed to look up the city name.'
             }
+            console.log("THE MESSAGE YA ZFT IS "+msg)
             sendTextMessage(sender, msg)
         });
     } else {
