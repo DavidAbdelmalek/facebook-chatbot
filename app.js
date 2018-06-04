@@ -121,6 +121,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                 console.log(JSON.stringify(json))
                 console.log("THE RESPONSE IS " + json.Response==="True");
                 if (json.Response === "True") {
+                    console.log("ENTEEREDD JSON.Response");
                     var query = {
                         user_id: sender
                     };
@@ -146,6 +147,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                     //   sendTextMessage(sender, msg);
 
                 } else {
+                    console.log("EROORRRR IN json.Response");
                     console.log(json.Error);
                     msg = json.Error
                 }
