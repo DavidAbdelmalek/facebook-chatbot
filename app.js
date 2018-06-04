@@ -13,7 +13,7 @@ app.get('/',(req,res)=>{
 });
 
 app.get("/webhook", function (req, res) {
-    if (req.query["hub.verify_token"] === "ineedGodshelpinmylife96") {
+    if (req.query["hub.verify_token"] === process.env.Verify_TOKEN) {
         console.log("Verified webhook");
         res.status(200).send(req.query["hub.challenge"]);
     } else {
