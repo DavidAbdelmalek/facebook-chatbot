@@ -108,6 +108,7 @@ function sendToApiAi(sender, text) {
 
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
+    console.log("GER");
     if (action === 'weather') {
         let city = parameters['geo-city'];
         let restUrl = 'http://api.openweathermap.org/data/2.5/weather?APPID=' + config.WEATHER_API_KEY + '&q=' + city;
@@ -132,7 +133,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
     } else {
         sendTextMessage(sender, responseText);
     }
-
 }
 
 
@@ -141,8 +141,8 @@ function handleApiAiResponse(sender, response) {
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
     let action = response.result.action;
-    //  let contexts = response.result.contexts;
-    // let parameters = response.result.parameters;
+    let contexts = response.result.contexts;
+    let parameters = response.result.parameters;
 
     if (responseText == '' && !isDefined(action)) {
         //api ai could not evaluate input.
