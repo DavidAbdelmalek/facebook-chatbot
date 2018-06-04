@@ -143,6 +143,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                         } else {
                             msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
                         }
+                        console.log("The message is "+msg);
                     });
                     //   sendTextMessage(sender, msg);
 
