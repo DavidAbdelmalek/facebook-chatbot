@@ -53,9 +53,13 @@ app.post('/webhook', function (req, res) {
         //check if we have multiple entries
         req.body.entry.forEach(function (entry) {
             entry.messaging.forEach(function (event) {
-                if (event.message && event.message.text) {
+                if (event.postback){
+                    handlePostBack(event)
+                }
+                else if (event.message && event.message.text) {
                     receivedMessage(event);
                 }
+            
             });
         });
         res.status(200).end();
@@ -225,17 +229,15 @@ function callSendAPI(messageData) {
 function sendTypingOn(recipientId) {
 
 
-    var messageData = {
-        recipient: {
-            id: recipientId
-        },
-        sender_action: "typing_on"
-    };
+	var messageData = {
+		recipient: {
+			id: recipientId
+		},
+		sender_action: "typing_on"
+	};
 
-    callSendAPI(messageData);
+	callSendAPI(messageData);
 }
-
-
 
 /*
  * Turn typing indicator off
@@ -254,6 +256,37 @@ function sendTypingOff(recipientId) {
     callSendAPI(messageData);
 }
 
+function handlePostBack(event){
+     var senderId = event.sender.id;
+     var payload = event.postback.payload;
+
+     if (payload === "Greeting") {
+         // Get user's first name from the User Profile API
+         // and include it in the greeting
+         request({
+             url: "https://graph.facebook.com/v2.6/" + senderId,
+             qs: {
+                 access_token: process.env.PAGE_ACCESS_TOKEN,
+                 fields: "first_name"
+             },
+             method: "GET"
+         }, function (error, response, body) {
+             var greeting = "";
+             if (error) {
+                 console.log("Error getting user's name: " + error);
+             } else {
+                 var bodyObj = JSON.parse(body);
+                 name = bodyObj.first_name;
+                 greeting = "Hi " + name + ". ";
+             }
+             var message = greeting + "My name is Weather ChatBot. I can tell you various details regarding weather."
+             sendMessage(senderId, {
+                 text: message
+             });
+         });
+     }
+}
+
 
 function isDefined(obj) {
     if (typeof obj == 'undefined') {
@@ -266,9 +299,3 @@ function isDefined(obj) {
 
     return obj != null;
 }
-
-console.log("hello");
-
-
-
-//Action in API.AI is the code name that we will use.
