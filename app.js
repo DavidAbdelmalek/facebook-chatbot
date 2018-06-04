@@ -117,6 +117,7 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
         request.get(restUrl, (err, response, body) => {
             if (!err && response.statusCode == 200) {
                 let json = JSON.parse(body);
+                console.log(JSON.stringify(json));
                  msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
                 sendTextMessage(sender, msg);
             } else 
