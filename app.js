@@ -112,7 +112,7 @@ function sendToApiAi(sender, text) {
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
     if (action === 'weather') {
-        let msg;
+        var msg;
         let city = parameters['geo-city'];
         let restUrl = 'http://api.openweathermap.org/data/2.5/weather?APPID=' + config.WEATHER_API_KEY + '&q=' + city;
         request.get(restUrl, (err, response, body) => {
