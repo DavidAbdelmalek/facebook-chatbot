@@ -108,6 +108,7 @@ function sendToApiAi(sender, text) {
 
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
+    console.log("Entered handleApiAiAction "+action);
     if (action === 'weather') {
         console.log("Entered Action")
         let city = parameters['geo-city'];
@@ -143,6 +144,8 @@ function handleApiAiResponse(sender, response) {
     let action = response.result.action;
     let contexts = response.result.contexts;
     let parameters = response.result.parameters;
+
+    console.log("Api Respinse Action "+action)
 
     if (responseText == '' && !isDefined(action)) {
         //api ai could not evaluate input.
