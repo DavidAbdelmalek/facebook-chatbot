@@ -46,7 +46,6 @@ app.get("/webhook", function (req, res) {
 
 //Handling Messages
 app.post('/webhook', function (req, res) {
-    console.log(JSON.stringify(req.body));
 
     //if the trigger comes from Page
     if (req.body.object === 'page') {
@@ -72,8 +71,8 @@ function receivedMessage(event) {
     var message = event.message;
 
 
-    console.log("Received message for user %d and page %d at %d with message:", senderID, recipientID, timeOfMessage);
-    console.log(JSON.stringify(message));
+//    console.log("Received message for user %d and page %d at %d with message:", senderID, recipientID, timeOfMessage);
+//   console.log(JSON.stringify(message));
 
     //if sender is not exists in map, set the sender as a key to random number as a value;
     if (!sessionIds.has(senderID)) {
@@ -112,9 +111,7 @@ function sendToApiAi(sender, text) {
 
 
 function handleApiAiAction(sender, action, responseText, contexts, parameters) {
-    console.log("Entered handleApiAiAction "+action);
     if (action === 'weather') {
-        console.log("Entered Action")
         let msg;
         let city = parameters['geo-city'];
         let restUrl = 'http://api.openweathermap.org/data/2.5/weather?APPID=' + config.WEATHER_API_KEY + '&q=' + city;
@@ -134,7 +131,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
                           humidity: json.Actors
                       };
                 }
-                console.log(JSON.stringify(json));
                  msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉ with wind speed ' + json.wind.speed;
              //   sendTextMessage(sender, msg);
             } else{ 
@@ -149,8 +145,6 @@ function handleApiAiAction(sender, action, responseText, contexts, parameters) {
 
 
 function handleApiAiResponse(sender, response) {
-    console.log("RESPONSE IS \n" + JSON.stringify(response.body));
-//    console.log("//////// " + response.result.action + " with compariseon to " + response.queryResult.action);
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
@@ -158,11 +152,8 @@ function handleApiAiResponse(sender, response) {
     let contexts = response.result.contexts;
     let parameters = response.result.parameters;
 
-    console.log("Api Respinse Action "+action)
-
     if (responseText == '' && !isDefined(action)) {
         //api ai could not evaluate input.
-        console.log('Unknown query' + response.result.resolvedQuery);
         sendTextMessage(sender, "I'm not sure what you want. Can you be more specific?");
     } else if (isDefined(action)) {
         handleApiAiAction(sender, action, responseText, contexts, parameters);
@@ -186,7 +177,6 @@ function sendTextMessage(recipientId, text) {
 
 
 function callSendAPI(messageData) {
-    console.log(messageData.body)
     request({
         uri: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {
