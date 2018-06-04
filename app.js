@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var request = require('request');
+var config = require('./config');
 
 var app = express();
 app.use(bodyParser.json());
@@ -62,7 +63,8 @@ function sendMessage(event) {
 }
 
 //setting configuration between API.AI and Facebook Messanger
-const apiaiApp = require('apiai')(CLIENT_ACCESS_TOKEN);
+var apiai = require('apiai');
+const apiaiApp = apiai(config.API_AI_CLIENT_ACCESS_TOKEN);
 
 
 function sendMessage(event) {
