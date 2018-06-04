@@ -278,9 +278,7 @@ function handlePostBack(event){
                  greeting = "Hi " + name + ". ";
              }
              var message = greeting + "My name is Weather ChatBot. I can tell you various details regarding weather."
-             sendMessage(senderId, {
-                 text: message
-             });
+             sendTextMessage(senderId, message);
          });
      }
 }
