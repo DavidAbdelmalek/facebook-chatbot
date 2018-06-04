@@ -4,4 +4,5 @@ module.exports = {
     API_AI_CLIENT_ACCESS_TOKEN: 'ae6a913acfe3495bb73b52c918c93dcb',
     FB_APP_SECRET: '',
     SERVER_URL: 'https://weatherguru96.herokuapp.com/',
+    WEATHER_API_KEY: '29150a87bcad694d1f62b2da1f1b1b68'
 };

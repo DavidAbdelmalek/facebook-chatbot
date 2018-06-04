@@ -6,9 +6,12 @@ const apiai = require('apiai');
 const sessionIds = new Map();
 const uuid = require('uuid')
 
+
 var app = express();
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 app.listen((process.env.PORT || 5000));
 
 
@@ -20,7 +23,7 @@ const apiAiService = apiai(config.API_AI_CLIENT_ACCESS_TOKEN, {
 
 
 //default route
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send("Hello");
 });
 
@@ -28,7 +31,7 @@ app.get('/',(req,res)=>{
 //Validate that Facebook webhook is correct!
 app.get("/webhook", function (req, res) {
     if (req.query['hub.mode'] && req.query["hub.verify_token"] === process.env.Verify_TOKEN) {
-      //  console.log("Verified webhook");
+        //  console.log("Verified webhook");
         res.status(200).send(req.query["hub.challenge"]);
     } else {
         console.error("Verification failed. The tokens do not match.");
@@ -37,17 +40,17 @@ app.get("/webhook", function (req, res) {
 });
 
 //Handling Messages
-app.post('/webhook',function(req,res){
-	console.log(JSON.stringify(req.body));
-   
+app.post('/webhook', function (req, res) {
+    console.log(JSON.stringify(req.body));
+
     //if the trigger comes from Page
     if (req.body.object === 'page') {
-   
+
         //check if we have multiple entries
         req.body.entry.forEach(function (entry) {
-            entry.messaging.forEach(function( event){
+            entry.messaging.forEach(function (event) {
                 if (event.message && event.message.text) {
-                    console.log("Berrrr");
+
                     receivedMessage(event);
                 }
             });
@@ -55,19 +58,6 @@ app.post('/webhook',function(req,res){
         res.status(200).end();
     }
 });
-
-function sendTextMessage(recipientId, text) {
-    var messageData = {
-        recipient: {
-            id: recipientId
-        },
-        message: {
-            text: text
-        }
-    }
-    callSendAPI(messageData);
-}
-
 
 
 function receivedMessage(event) {
@@ -88,9 +78,9 @@ function receivedMessage(event) {
     //Handling Quick Reply
     //var quickReply = message.quick_reply;
     // if (quickReply) {
-     //   handleQuickReply(senderID, quickReply, messageId);
-     //   return;
-   // }
+    //   handleQuickReply(senderID, quickReply, messageId);
+    //   return;
+    // }
 
     //Handling message Text
     var messageText = message.text;
@@ -108,7 +98,7 @@ function sendToApiAi(sender, text) {
     });
 
     apiaiRequest.on('response', (response) => {
-            handleApiAiResponse(sender, response);
+        handleApiAiResponse(sender, response);
     });
 
     apiaiRequest.on('error', (error) => console.error(error));
@@ -117,30 +107,67 @@ function sendToApiAi(sender, text) {
 
 
 
+function handleApiAiAction(sender, action, responseText, contexts, parameters) {
+    if (action === 'weather') {
+        let city = parameters['geo-city'];
+        let restUrl = 'http://api.openweathermap.org/data/2.5/weather?APPID=' + config.WEATHER_API_KEY + '&q=' + city;
+        request.get(restUrl, (err, response, body) => {
+            if (!err && response.statusCode == 200) {
+                let json = JSON.parse(body);
+                let msg = json.weather[0].description + ' and the temperature is ' + json.main.temp + ' ℉';
+                return res.json({
+                    speech: msg,
+                    displayText: msg,
+                    source: 'weather'
+                });
+            } else {
+                return res.status(400).json({
+                    status: {
+                        code: 400,
+                        errorType: 'I failed to look up the city name.'
+                    }
+                });
+            }
+        });
+    } else {
+        sendTextMessage(sender, responseText);
+    }
+
+}
+
+
 function handleApiAiResponse(sender, response) {
     let responseText = response.result.fulfillment.speech;
     let responseData = response.result.fulfillment.data;
     let messages = response.result.fulfillment.messages;
-  //  let action = response.result.action;
-  //  let contexts = response.result.contexts;
-   // let parameters = response.result.parameters;
+    let action = response.result.action;
+    //  let contexts = response.result.contexts;
+    // let parameters = response.result.parameters;
 
-   if (responseText == '' && !isDefined(action)) {
+    if (responseText == '' && !isDefined(action)) {
         //api ai could not evaluate input.
         console.log('Unknown query' + response.result.resolvedQuery);
         sendTextMessage(sender, "I'm not sure what you want. Can you be more specific?");
-    } else if (isDefined(responseData) && isDefined(responseData.facebook)) {
-        try {
-            console.log('Response as formatted message' + responseData.facebook);
-            sendTextMessage(sender, responseData.facebook);
-        } catch (err) {
-            sendTextMessage(sender, err.message);
-        }
-    } else if (isDefined(responseText)) {
-
+    } else if (isDefined(action)) {
+        handleApiAiAction(sender, action, responseText, contexts, parameters);
+    } else {
         sendTextMessage(sender, responseText);
     }
 }
+
+
+function sendTextMessage(recipientId, text) {
+    var messageData = {
+        recipient: {
+            id: recipientId
+        },
+        message: {
+            text: text
+        }
+    }
+    callSendAPI(messageData);
+}
+
 
 function callSendAPI(messageData) {
     request({
@@ -181,6 +208,8 @@ function isDefined(obj) {
     return obj != null;
 }
 
-
-
 console.log("hello");
+
+
+
+//Action in API.AI is the code name that we will use.
